@@ -80,12 +80,7 @@ class ImageProcessingBot(Bot):
             img_path = self.download_user_photo(msg)
             caption = msg.get('caption', '').lower()
 
-            if caption == 'contour':
-                img = Img(img_path)
-                img.contour()
-                processed_img_path = img.save_img()
-                self.send_photo(msg['chat']['id'], processed_img_path)
-            elif caption == 'rotate':
+            if caption == 'rotate':
                 img = Img(img_path)
                 img.rotate()
                 processed_img_path = img.save_img()
@@ -95,13 +90,7 @@ class ImageProcessingBot(Bot):
                 img.salt_n_pepper()
                 processed_img_path = img.save_img()
                 self.send_photo(msg['chat']['id'], processed_img_path)
-            elif caption == 'concat':
-                # You'll need to implement logic for getting and processing another image
-                # For example: other_img = Img(another_img_path)
-                # img.concat(other_img)
-                # processed_img_path = img.save_img()
-                # self.send_photo(msg['chat']['id'], processed_img_path)
-                self.send_text(msg['chat']['id'], "Concat functionality is not implemented yet.")
+
             elif caption == 'segment':
                 img = Img(img_path)
                 img.segment()

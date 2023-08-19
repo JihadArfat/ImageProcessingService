@@ -84,38 +84,6 @@ class Img:
             x = random.randint(0, width - 1)
             self.data[y][x] = 0 if random.random() < 0.5 else 255
 
-    def concat(self, other_img, direction='horizontal'):
-        if direction not in ('horizontal', 'vertical'):
-            raise ValueError("Invalid 'direction'. Use 'horizontal' or 'vertical'.")
-
-        if direction == 'horizontal':
-            new_width = len(self.data[0]) + len(other_img.data[0])
-            new_height = max(len(self.data), len(other_img.data))
-        else:
-            new_width = max(len(self.data[0]), len(other_img.data[0]))
-            new_height = len(self.data) + len(other_img.data)
-
-        new_data = []
-
-        for y in range(new_height):
-            new_row = []
-
-            for x in range(new_width):
-                if direction == 'horizontal':
-                    if x < len(self.data[0]):
-                        new_row.append(self.data[y][x])
-                    else:
-                        new_row.append(other_img.data[y][x - len(self.data[0])])
-                else:
-                    if y < len(self.data):
-                        new_row.append(self.data[y][x])
-                    else:
-                        new_row.append(other_img.data[y - len(self.data)][x])
-
-            new_data.append(new_row)
-
-        self.data = new_data
-
     def segment(self, threshold=128):
         new_data = []
 
