@@ -1,5 +1,7 @@
 from pathlib import Path
 from matplotlib.image import imread, imsave
+import math
+import random
 
 
 def rgb2gray(rgb):
@@ -50,18 +52,80 @@ class Img:
 
             self.data[i] = res
 
-    def rotate(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+    def rotate(self, angle=-90):
+        radians = math.radians(angle)
+        cos_val = math.cos(radians)
+        sin_val = math.sin(radians)
 
-    def salt_n_pepper(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        new_data = []
+        height, width = len(self.data), len(self.data[0])
+
+        for y in range(height):
+            new_row = []
+            for x in range(width):
+                new_x = int((x - width / 2) * cos_val - (y - height / 2) * sin_val + width / 2)
+                new_y = int((x - width / 2) * sin_val + (y - height / 2) * cos_val + height / 2)
+
+                if 0 <= new_x < width and 0 <= new_y < height:
+                    new_row.append(self.data[new_y][new_x])
+                else:
+                    new_row.append(0)  # Fill with black for out-of-bounds
+
+            new_data.append(new_row)
+
+        self.data = new_data
+
+    def salt_n_pepper(self, amount=0.02):
+        height, width = len(self.data), len(self.data[0])
+        num_pixels = int(height * width * amount)
+
+        for _ in range(num_pixels):
+            y = random.randint(0, height - 1)
+            x = random.randint(0, width - 1)
+            self.data[y][x] = 0 if random.random() < 0.5 else 255
 
     def concat(self, other_img, direction='horizontal'):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        if direction not in ('horizontal', 'vertical'):
+            raise ValueError("Invalid 'direction'. Use 'horizontal' or 'vertical'.")
 
-    def segment(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        if direction == 'horizontal':
+            new_width = len(self.data[0]) + len(other_img.data[0])
+            new_height = max(len(self.data), len(other_img.data))
+        else:
+            new_width = max(len(self.data[0]), len(other_img.data[0]))
+            new_height = len(self.data) + len(other_img.data)
+
+        new_data = []
+
+        for y in range(new_height):
+            new_row = []
+
+            for x in range(new_width):
+                if direction == 'horizontal':
+                    if x < len(self.data[0]):
+                        new_row.append(self.data[y][x])
+                    else:
+                        new_row.append(other_img.data[y][x - len(self.data[0])])
+                else:
+                    if y < len(self.data):
+                        new_row.append(self.data[y][x])
+                    else:
+                        new_row.append(other_img.data[y - len(self.data)][x])
+
+            new_data.append(new_row)
+
+        self.data = new_data
+
+    def segment(self, threshold=128):
+        new_data = []
+
+        for row in self.data:
+            new_row = []
+
+            for pixel_value in row:
+                new_pixel_value = 255 if pixel_value >= threshold else 0
+                new_row.append(new_pixel_value)
+
+            new_data.append(new_row)
+
+        self.data = new_data

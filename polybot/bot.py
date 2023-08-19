@@ -11,7 +11,7 @@ class Bot:
     def __init__(self, token, telegram_chat_url):
         # create a new instance of the TeleBot class.
         # all communication with Telegram servers are done using self.telegram_bot_client
-        self.telegram_bot_client = telebot.TeleBot(token)
+        self.telegram_bot_client = telebot.TeleBot('6269263232:AAGpZnAFZbKFoQwtmT6SgNyV2IxF0A59ojs')
 
         # remove any existing webhooks configured in Telegram servers
         self.telegram_bot_client.remove_webhook()
@@ -75,4 +75,41 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    pass
+    def handle_message(self, msg):
+        if self.is_current_msg_photo(msg):
+            img_path = self.download_user_photo(msg)
+            caption = msg.get('caption', '').lower()
+
+            if caption == 'contour':
+                img = Img(img_path)
+                img.contour()
+                processed_img_path = img.save_img()
+                self.send_photo(msg['chat']['id'], processed_img_path)
+            elif caption == 'rotate':
+                img = Img(img_path)
+                img.rotate()
+                processed_img_path = img.save_img()
+                self.send_photo(msg['chat']['id'], processed_img_path)
+            elif caption == 'salt and pepper':
+                img = Img(img_path)
+                img.salt_n_pepper()
+                processed_img_path = img.save_img()
+                self.send_photo(msg['chat']['id'], processed_img_path)
+            elif caption == 'concat':
+                # You'll need to implement logic for getting and processing another image
+                # For example: other_img = Img(another_img_path)
+                # img.concat(other_img)
+                # processed_img_path = img.save_img()
+                # self.send_photo(msg['chat']['id'], processed_img_path)
+                self.send_text(msg['chat']['id'], "Concat functionality is not implemented yet.")
+            elif caption == 'segment':
+                img = Img(img_path)
+                img.segment()
+                processed_img_path = img.save_img()
+                self.send_photo(msg['chat']['id'], processed_img_path)
+            else:
+                self.send_text(msg['chat']['id'], "Unknown image processing option. Please choose from Blur, Contour, Rotate, Salt and Pepper, Concat, Segment.")
+        else:
+            self.send_text(msg['chat']['id'], "Please send a photo for image processing.")
+
+
