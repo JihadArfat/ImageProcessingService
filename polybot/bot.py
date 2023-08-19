@@ -90,6 +90,11 @@ class ImageProcessingBot(Bot):
                 img.salt_n_pepper()
                 processed_img_path = img.save_img()
                 self.send_photo(msg['chat']['id'], processed_img_path)
+            elif caption == 'contour':
+                img = Img(img_path)
+                img.contour()
+                processed_img_path = img.save_img()
+                self.send_photo(msg['chat']['id'], processed_img_path)
 
             elif caption == 'segment':
                 img = Img(img_path)
